@@ -9,7 +9,8 @@ const app = express();
 app.use( express.urlencoded ({ extended : false }) );
 app.use( express.json() );
 
-app.use( require('./routes/usuario'));
+// Configuración global de rutas
+app.use( require('./routes/index') );
 
 // base de datos
 mongoose.connect( process.env.URLDB, {
@@ -21,11 +22,6 @@ mongoose.connect( process.env.URLDB, {
 })
 .then( () => console.log('BASE DE DATOS ONLINE'))
 .catch( ( e ) => console.log('no se pudo establecer una conexión con la dbo ', e ));
-
- 
-
-
- 
 
 
 // servidor

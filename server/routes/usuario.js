@@ -1,12 +1,15 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const _ = require('underscore');
 
-const app = express();
 const Usuario = require('../models/usuario');
+const { verificaToken, verificaAdmin_Role } = require('../middlewares/autenticacion');
+const app = express();
 
 
-app.get('/usuario', function ( req, res ) {
+app.get('/usuario', verificaToken,  ( req, res ) => {
+
 
     // parametro opcional = /usuario?from=x
     let from = Number( req.query.from ) || 0;
@@ -44,7 +47,8 @@ app.get('/usuario', function ( req, res ) {
   });
   
   
-app.post('/usuario', function ( req, res ) {
+app.post('/usuario', [ verificaToken, verificaAdmin_Role ], ( req, res ) => {
+    
 
      const body = req.body;
 
@@ -80,7 +84,8 @@ app.post('/usuario', function ( req, res ) {
 });
 
   
-app.put('/usuario/:id', function ( req, res ) {
+app.put('/usuario/:id', [ verificaToken, verificaAdmin_Role ], ( req, res ) => {
+
 
     let id = req.params.id;
     // restricción para solo actualizar los campos que se mencionan en el array
@@ -103,11 +108,14 @@ app.put('/usuario/:id', function ( req, res ) {
             });
         }
 
-
+        let token = jwt.sign({
+            usuario : usuarioDB
+        }, process.env.SEED ,{ expiresIn: process.env.CADUCIDAD_TOKEN });
 
         res.json({
             ok : true,
-            usuario : usuarioDB
+            usuario : usuarioDB,
+            token
         });
 
     }); 
@@ -151,9 +159,10 @@ app.put('/usuario/:id', function ( req, res ) {
 }); */
 
 // desactivar usuario cambiando flag de estado
-app.delete('/usuario/:id', function ( req, res ) {
+app.delete('/usuario/:id', [ verificaToken, verificaAdmin_Role ], ( req, res ) => {
 
     const id = req.params.id;
+
     const options = {
         new : true
     }
