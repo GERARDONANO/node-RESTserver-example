@@ -65,6 +65,15 @@ app.put('/upload/:tipo/:id', ( req, res ) => {
     const nombreArchivo = `${ id }-${ new Date().getMilliseconds() }.${ extension }`;
 
     const pathGuardar = `uploads/${ tipo }/${ nombreArchivo }`;
+
+    // validar si tenemos los directorios creados
+  
+    if( ! fs.existsSync( path.resolve(`uploads`) ) ) {
+        crearDirectorio();
+    }
+    if( ! fs.existsSync( path.resolve(`uploads/${ tipo }`) ) ){
+        crearDirectorio( tipo );
+    }
     
     // mover el archivo
     archivo.mv( pathGuardar, async ( err ) => {
@@ -91,6 +100,43 @@ app.put('/upload/:tipo/:id', ( req, res ) => {
 
       });
 
+      function crearDirectorio( tipo ){
+
+        switch ( tipo ) {
+            case 'usuarios':
+                fs.mkdir(`uploads/${ tipo }`, err => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log('Directory Created');
+                    }
+                });
+                break;
+        
+            case 'productos':
+                fs.mkdir(`uploads/${ tipo }`, err => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log('Directory Created');
+                    }
+                });
+                break;
+
+            default :
+
+                fs.mkdir('uploads', err => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log('Directory Created');
+                    }
+                });
+
+                break;
+        }
+
+    }
 
 
       function imagenUsuario( id, res, nombreArchivo ){
