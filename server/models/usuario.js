@@ -25,7 +25,8 @@ let usuarioSchema = new Schema({
     },
     img : {
         type : String,
-        required : false
+        required : false,
+        default : 'profileDefault'
     },
     role : {
         type : String,
@@ -58,6 +59,9 @@ usuarioSchema.plugin( uniqueValidator, {
     message : '{PATH} debe ser único'
 
 });
+
+
+
 
 
 module.exports = mongoose.model( 'Usuario', usuarioSchema );
